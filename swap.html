@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Crypto Price Tracker - Home</title>
+    <title>Dynamic Crypto Price Tracker - Swap Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -21,17 +21,28 @@
                     aria-label="Toggle theme">🌙</button></li>
         </ul>
     </nav>
-    <div class="container mx-auto text-center">
-        <h1 class="text-3xl sm:text-4xl font-bold mb-6">Welcome to Dynamic Crypto Price Tracker</h1>
-        <p class="text-lg mb-4">Track your favorite cryptocurrencies, explore trending tokens, and calculate swaps with
-            ease.</p>
-        <a href="tracker.html" class="gradient-button text-white px-6 py-2 rounded dark:text-gray-200">Start
-            Tracking</a>
+    <div class="container mx-auto">
+        <h1 class="text-3xl sm:text-4xl font-bold mb-6 dark:text-gray-200">Token Swap Calculator</h1>
+        <div class="flex flex-wrap gap-4 justify-center mb-6">
+            <input id="swapFrom" type="text" placeholder="From token"
+                class="bg-gray-800 text-white px-4 py-2 rounded w-32 dark:bg-gray-600 dark:text-gray-200"
+                aria-label="From token">
+            <input id="swapAmount" type="number" placeholder="Amount"
+                class="bg-gray-800 text-white px-4 py-2 rounded w-24 dark:bg-gray-600 dark:text-gray-200"
+                aria-label="Amount">
+            <input id="swapTo" type="text" placeholder="To token"
+                class="bg-gray-800 text-white px-4 py-2 rounded w-32 dark:bg-gray-600 dark:text-gray-200"
+                aria-label="To token">
+            <button id="calculateSwap" class="gradient-button text-white px-4 py-2 rounded dark:text-gray-200"
+                aria-label="Calculate swap">Calculate</button>
+        </div>
+        <p id="swapResult" class="text-center dark:text-gray-200"></p>
     </div>
     <audio id="clickSound" src="click.mp3"></audio>
     <script src="script.js"></script>
     <script>
         initializeTheme();
+        calculateSwap.addEventListener("click", calculateSwapValue);
     </script>
 </body>
 

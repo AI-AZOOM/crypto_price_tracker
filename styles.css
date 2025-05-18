@@ -1,0 +1,23 @@
+.gradient-button {
+    background: linear-gradient(to right, #3b82f6, #a855f7);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.gradient-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+
+.sidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 640px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+}
