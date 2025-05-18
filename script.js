@@ -43,6 +43,9 @@ document.addEventListener("click", () => {
     }
 }, { once: true });
 
+// Play sound on any click
+document.addEventListener("click", playClickSound);
+
 function playClickSound() {
     if (isSoundReady && clickSound) {
         clickSound.play().catch(err => console.error("Sound play failed:", err));
@@ -60,7 +63,6 @@ function initializeTheme() {
 
 if (themeToggle) {
     themeToggle.addEventListener("click", () => {
-        playClickSound();
         const newTheme = body.classList.contains("bg-gray-900") ? "light" : "dark";
         body.classList.toggle("bg-gray-900");
         body.classList.toggle("bg-white");
@@ -73,14 +75,12 @@ if (themeToggle) {
 
 if (sidebarToggle && sidebar) {
     sidebarToggle.addEventListener("click", () => {
-        playClickSound();
         sidebar.classList.toggle("open");
     });
 }
 
 if (autoRefresh) {
     autoRefresh.addEventListener("change", () => {
-        playClickSound();
         if (autoRefresh.checked) {
             autoRefreshInterval = setInterval(updatePrices, 30000);
         } else {
@@ -157,7 +157,6 @@ async function fetchSuggestions(query) {
         suggestions.classList.remove("hidden");
         document.querySelectorAll("#suggestions li").forEach(item => {
             item.addEventListener("click", () => {
-                playClickSound();
                 tokenInput.value = item.dataset.id;
                 suggestions.classList.add("hidden");
             });
@@ -180,7 +179,6 @@ async function fetchTrending() {
         });
         document.querySelectorAll(".add-trending").forEach(button => {
             button.addEventListener("click", () => {
-                playClickSound();
                 const token = button.dataset.id;
                 if (token && !tokens.includes(token)) {
                     tokens.push(token);
@@ -196,7 +194,6 @@ async function fetchTrending() {
 
 async function calculateSwapValue() {
     if (!swapResult) return;
-    playClickSound();
     const from = swapFrom.value.trim();
     const to = swapTo.value.trim();
     const amount = parseFloat(swapAmount.value) || 0;
@@ -274,7 +271,6 @@ async function updatePrices() {
     }
     document.querySelectorAll(".remove-token").forEach(button => {
         button.addEventListener("click", () => {
-            playClickSound();
             tokens = tokens.filter(t => t !== button.dataset.token);
             delete alerts[button.dataset.token];
             localStorage.setItem("tokens", JSON.stringify(tokens));
@@ -285,7 +281,6 @@ async function updatePrices() {
     document.querySelectorAll("[data-token]").forEach(card => {
         card.addEventListener("click", async () => {
             if (event.target.classList.contains("remove-token") || event.target.tagName === "A") return;
-            playClickSound();
             const token = card.dataset.token;
             const data = await fetchTokenPrice(token);
             if (data) {
@@ -308,7 +303,6 @@ async function updatePrices() {
 
 if (tokenInput) tokenInput.addEventListener("input", () => fetchSuggestions(tokenInput.value.trim()));
 if (addToken) addToken.addEventListener("click", () => {
-    playClickSound();
     const token = tokenInput.value.trim();
     if (token && !tokens.includes(token)) {
         tokens.push(token);
@@ -319,7 +313,6 @@ if (addToken) addToken.addEventListener("click", () => {
     }
 });
 if (setAlert) setAlert.addEventListener("click", () => {
-    playClickSound();
     const token = modalTitle.textContent.split(" (")[0];
     const price = parseFloat(alertPrice.value);
     if (price) {
@@ -329,6 +322,5 @@ if (setAlert) setAlert.addEventListener("click", () => {
     }
 });
 if (closeModal) closeModal.addEventListener("click", () => {
-    playClickSound();
     modal.classList.add("hidden");
 });
