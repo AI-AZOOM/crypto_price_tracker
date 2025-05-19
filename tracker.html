@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,27 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
-
-<body
-    class="min-h-screen p-4 sm:p-6 transition-colors duration-300 bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-    id="body">
+<body class="min-h-screen p-4 sm:p-6 transition-colors duration-300 bg-gray-900 text-white dark:bg-white dark:text-gray-900 overflow-x-hidden" id="body">
     <nav class="bg-gray-800 p-4 mb-6 rounded-lg dark:bg-gray-200">
         <ul class="flex flex-col sm:flex-row gap-4 justify-center">
             <li><a href="index.html" class="text-blue-400 hover:underline dark:text-blue-600">Home</a></li>
             <li><a href="tracker.html" class="text-blue-400 hover:underline dark:text-blue-600">Tracker</a></li>
             <li><a href="swap.html" class="text-blue-400 hover:underline dark:text-blue-600">Swap Calculator</a></li>
-            <li><button id="themeToggle"
-                    class="gradient-button text-white px-3 py-1 rounded dark:bg-gray-600 dark:text-gray-900"
-                    aria-label="Toggle theme">🌙</button></li>
+            <li><button id="themeToggle" class="gradient-button text-white px-3 py-1 rounded dark:bg-gray-600 dark:text-gray-900" aria-label="Toggle theme">🌙</button></li>
         </ul>
     </nav>
     <div class="container mx-auto relative">
-        <button id="sidebarToggle"
-            class="fixed top-4 left-4 sm:hidden bg-gray-700 text-white p-2 rounded hover:bg-gray-600 dark:bg-gray-300 dark:text-gray-900 dark:hover:bg-gray-400"
-            aria-label="Toggle sidebar">☰</button>
+        <button id="sidebarToggle" class="fixed top-4 left-4 sm:hidden bg-gray-700 text-white p-2 rounded hover:bg-gray-600 dark:bg-gray-300 dark:text-gray-900 dark:hover:bg-gray-400" aria-label="Toggle sidebar">☰</button>
         <div class="flex flex-col sm:flex-row gap-4">
-            <div id="sidebar"
-                class="sidebar fixed sm:static top-0 left-0 h-full w-64 bg-gray-800 p-4 sm:w-1/4 sm:block dark:bg-gray-200">
+            <div id="sidebar" class="sidebar fixed sm:static top-0 left-0 h-full w-64 bg-gray-800 p-4 sm:w-1/4 sm:block dark:bg-gray-200">
                 <h2 class="text-2xl font-semibold mb-4 dark:text-gray-900">Trending Tokens</h2>
                 <div id="trendingList" class="flex flex-col gap-2"></div>
             </div>
@@ -36,19 +27,11 @@
                 <h1 class="text-3xl sm:text-4xl font-bold mb-6 dark:text-gray-900">Token Tracker</h1>
                 <div class="flex flex-col sm:flex-row justify-center gap-4 mb-6 relative">
                     <div class="relative w-full sm:w-64">
-                        <input id="tokenInput" type="text" placeholder="Enter token name, symbol, or address"
-                            class="bg-gray-800 text-white px-4 py-2 rounded w-full dark:bg-gray-200 dark:text-gray-900"
-                            aria-label="Token input">
-                        <ul id="suggestions"
-                            class="absolute z-10 bg-gray-800 w-full mt-1 rounded shadow-lg hidden dark:bg-gray-200 dark:text-gray-900">
-                        </ul>
+                        <input id="tokenInput" type="text" placeholder="Enter token name, symbol, or address" class="bg-gray-800 text-white px-4 py-2 rounded w-full dark:bg-gray-200 dark:text-gray-900" aria-label="Token input">
+                        <ul id="suggestions" class="absolute z-10 bg-gray-800 w-full mt-1 rounded shadow-lg hidden dark:bg-gray-200 dark:text-gray-900"></ul>
                     </div>
-                    <button id="addToken"
-                        class="gradient-button text-white px-4 py-2 rounded dark:bg-gray-600 dark:text-gray-900"
-                        aria-label="Add token">Add Token</button>
-                    <button id="refresh"
-                        class="gradient-button text-white px-4 py-2 rounded dark:bg-gray-600 dark:text-gray-900"
-                        aria-label="Refresh prices">Refresh</button>
+                    <button id="addToken" class="gradient-button text-white px-4 py-2 rounded dark:bg-gray-600 dark:text-gray-900" aria-label="Add token">Add Token</button>
+                    <button id="refresh" class="gradient-button text-white px-4 py-2 rounded dark:bg-gray-600 dark:text-gray-900" aria-label="Refresh prices">Refresh</button>
                     <label class="flex items-center gap-2">
                         <input id="autoRefresh" type="checkbox" class="h-5 w-5 text-blue-600 dark:text-gray-900">
                         <span class="dark:text-gray-900">Auto-refresh (30s)</span>
@@ -60,16 +43,10 @@
                         <h2 id="modalTitle" class="text-2xl font-semibold mb-4 dark:text-gray-900"></h2>
                         <p id="modalDetails" class="mb-4 dark:text-gray-900"></p>
                         <div class="mb-4">
-                            <input id="alertPrice" type="number" placeholder="Set alert price (USD)"
-                                class="bg-gray-900 text-white px-4 py-2 rounded w-full dark:bg-gray-300 dark:text-gray-900"
-                                aria-label="Alert price">
-                            <button id="setAlert"
-                                class="gradient-button text-white px-4 py-2 rounded mt-2 w-full dark:bg-gray-600 dark:text-gray-900"
-                                aria-label="Set price alert">Set Alert</button>
+                            <input id="alertPrice" type="number" placeholder="Set alert price (USD)" class="bg-gray-900 text-white px-4 py-2 rounded w-full dark:bg-gray-300 dark:text-gray-900" aria-label="Alert price">
+                            <button id="setAlert" class="gradient-button text-white px-4 py-2 rounded mt-2 w-full dark:bg-gray-600 dark:text-gray-900" aria-label="Set price alert">Set Alert</button>
                         </div>
-                        <button id="closeModal"
-                            class="gradient-button text-white px-4 py-2 rounded w-full dark:bg-gray-600 dark:text-gray-900"
-                            aria-label="Close modal">Close</button>
+                        <button id="closeModal" class="gradient-button text-white px-4 py-2 rounded w-full dark:bg-gray-600 dark:text-gray-900" aria-label="Close modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -83,5 +60,4 @@
         updatePrices();
     </script>
 </body>
-
 </html>
