@@ -58,6 +58,19 @@ function initializeTheme() {
     body.classList.toggle("bg-white", !isDark);
     body.classList.toggle("text-white", isDark);
     body.classList.toggle("text-gray-900", !isDark);
+    if (sidebar) {
+        sidebar.classList.toggle("dark", !isDark);
+    }
+    if (priceList) {
+        priceList.classList.toggle("dark", !isDark);
+        updatePrices(); // Re-render cards to apply theme
+    }
+    document.querySelectorAll("nav").forEach(nav => {
+        nav.classList.toggle("dark", !isDark);
+    });
+    document.querySelectorAll(".token-card").forEach(card => {
+        card.classList.toggle("dark", !isDark);
+    });
     if (themeToggle) themeToggle.textContent = isDark ? "🌙" : "☀";
 }
 
@@ -68,6 +81,19 @@ if (themeToggle) {
         body.classList.toggle("bg-white");
         body.classList.toggle("text-white");
         body.classList.toggle("text-gray-900");
+        if (sidebar) {
+            sidebar.classList.toggle("dark");
+        }
+        if (priceList) {
+            priceList.classList.toggle("dark");
+            updatePrices(); // Re-render cards to apply theme
+        }
+        document.querySelectorAll("nav").forEach(nav => {
+            nav.classList.toggle("dark");
+        });
+        document.querySelectorAll(".token-card").forEach(card => {
+            card.classList.toggle("dark", newTheme === "light");
+        });
         themeToggle.textContent = newTheme === "dark" ? "🌙" : "☀";
         localStorage.setItem("theme", newTheme);
     });
@@ -91,8 +117,9 @@ if (autoRefresh) {
 
 async function fetchTokenPrice(tokenQuery) {
     try {
+        const query = tokenQuery.toLowerCase().trim();
         // DexScreener API
-        const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(tokenQuery)}`);
+        const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(query)}`);
         const dexData = await dexResponse.json();
         if (dexData.pairs && dexData.pairs.length > 0) {
             const pair = dexData.pairs[0];
@@ -117,7 +144,7 @@ async function fetchTokenPrice(tokenQuery) {
         }
 
         // CoinGecko API fallback
-        const cgResponse = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenQuery.toLowerCase()}?market_data=true&community_data=true`);
+        const cgResponse = await fetch(`https://api.coingecko.com/api/v3/coins/${query}?market_data=true&community_data=true`);
         if (cgResponse.ok) {
             const cgData = await cgResponse.json();
             return {
@@ -141,6 +168,7 @@ async function fetchTokenPrice(tokenQuery) {
         }
         throw new Error("Token not found");
     } catch (error) {
+        console.error(`Error fetching token ${tokenQuery}:`, error);
         return null;
     }
 }
@@ -148,21 +176,27 @@ async function fetchTokenPrice(tokenQuery) {
 async function fetchSuggestions(query) {
     if (!query || !suggestions) return;
     try {
-        const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`);
+        const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query.toLowerCase())}`);
         const data = await response.json();
         suggestions.innerHTML = "";
-        data.coins.slice(0, 5).forEach(coin => {
-            suggestions.innerHTML += `<li class="px-4 py-2 hover:bg-gray-700 cursor-pointer dark:hover:bg-gray-400 text-white dark:text-gray-900" data-id="${coin.id}">${coin.name} (${coin.symbol})</li>`;
-        });
-        suggestions.classList.remove("hidden");
-        document.querySelectorAll("#suggestions li").forEach(item => {
-            item.addEventListener("click", () => {
-                tokenInput.value = item.dataset.id;
-                suggestions.classList.add("hidden");
+        if (data.coins && data.coins.length > 0) {
+            data.coins.slice(0, 5).forEach(coin => {
+                suggestions.innerHTML += `<li class="px-4 py-2 hover:bg-gray-700 cursor-pointer dark:hover:bg-gray-400 text-white dark:text-gray-900" data-id="${coin.id}">${coin.name} (${coin.symbol})</li>`;
             });
-        });
+            suggestions.classList.remove("hidden");
+            document.querySelectorAll("#suggestions li").forEach(item => {
+                item.addEventListener("click", () => {
+                    tokenInput.value = item.dataset.id;
+                    suggestions.classList.add("hidden");
+                });
+            });
+        } else {
+            suggestions.innerHTML = '<li class="px-4 py-2 text-red-400 dark:text-red-600">No tokens found</li>';
+            suggestions.classList.remove("hidden");
+        }
     } catch (error) {
-        suggestions.classList.add("hidden");
+        suggestions.innerHTML = '<li class="px-4 py-2 text-red-400 dark:text-red-600">Error fetching suggestions</li>';
+        suggestions.classList.remove("hidden");
     }
 }
 
@@ -172,21 +206,25 @@ async function fetchTrending() {
         const response = await fetch("https://api.coingecko.com/api/v3/search/trending");
         const data = await response.json();
         trendingList.innerHTML = "";
-        data.coins.slice(0, 5).forEach(coin => {
-            trendingList.innerHTML += `
-                <button class="gradient-button text-white px-4 py-2 rounded w-full text-left add-trending dark:bg-gray-600 dark:text-gray-900" data-id="${coin.item.id}">${coin.item.name} (${coin.item.symbol})</button>
-            `;
-        });
-        document.querySelectorAll(".add-trending").forEach(button => {
-            button.addEventListener("click", () => {
-                const token = button.dataset.id;
-                if (token && !tokens.includes(token)) {
-                    tokens.push(token);
-                    localStorage.setItem("tokens", JSON.stringify(tokens));
-                    updatePrices();
-                }
+        if (data.coins && data.coins.length > 0) {
+            data.coins.slice(0, 5).forEach(coin => {
+                trendingList.innerHTML += `
+                    <button class="gradient-button text-white px-4 py-2 rounded w-full text-left add-trending dark:bg-gray-600 dark:text-gray-900" data-id="${coin.item.id}">${coin.item.name} (${coin.item.symbol})</button>
+                `;
             });
-        });
+            document.querySelectorAll(".add-trending").forEach(button => {
+                button.addEventListener("click", () => {
+                    const token = button.dataset.id;
+                    if (token && !tokens.includes(token)) {
+                        tokens.push(token);
+                        localStorage.setItem("tokens", JSON.stringify(tokens));
+                        updatePrices();
+                    }
+                });
+            });
+        } else {
+            trendingList.innerHTML = '<p class="text-red-400 dark:text-red-600">No trending tokens available</p>';
+        }
     } catch (error) {
         trendingList.innerHTML = '<p class="text-red-400 dark:text-red-600">Error loading trending tokens</p>';
     }
@@ -197,17 +235,18 @@ async function calculateSwapValue() {
     const from = swapFrom.value.trim();
     const to = swapTo.value.trim();
     const amount = parseFloat(swapAmount.value) || 0;
-    if (!from || !to || !amount) {
-        swapResult.textContent = "Enter valid tokens and amount";
+    if (!from || !to || amount <= 0) {
+        swapResult.textContent = "Please enter valid tokens and a positive amount";
         return;
     }
     const fromData = await fetchTokenPrice(from);
     const toData = await fetchTokenPrice(to);
     if (fromData && toData) {
         const value = (fromData.price * amount) / toData.price;
-        swapResult.textContent = `${amount} ${fromData.symbol} ≈ ${value.toFixed(4)} ${toData.symbol}`;
+        const usdValue = value * toData.price; // Calculate USD value of the converted amount
+        swapResult.textContent = `${amount} ${fromData.symbol} ≈ $${usdValue.toFixed(2)} (${value.toFixed(4)} ${toData.symbol})`;
     } else {
-        swapResult.textContent = "Invalid tokens";
+        swapResult.textContent = "One or both tokens are invalid. Try using token IDs (e.g., 'bitcoin', 'ethereum')";
     }
 }
 
@@ -216,11 +255,11 @@ async function checkAlerts() {
         const data = await fetchTokenPrice(token);
         if (data && data.price >= alerts[token]) {
             if (Notification.permission === "granted") {
-                new Notification(`${data.name} reached $${data.price}!`);
+                new Notification(`${data.name} reached ${data.price}!`);
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        new Notification(`${data.name} reached $${data.price}!`);
+                        new Notification(`${data.name} reached ${data.price}!`);
                     }
                 });
             }
@@ -234,16 +273,17 @@ async function updatePrices() {
     if (!priceList) return;
     priceList.innerHTML = '<div class="col-span-full text-center"><div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div></div>';
     priceList.innerHTML = "";
+    const isDark = body.classList.contains("bg-gray-900");
     for (const token of tokens) {
         const data = await fetchTokenPrice(token);
         if (data) {
             const changeColor = data.priceChange >= 0 ? "text-green-400 dark:text-green-600" : "text-red-400 dark:text-red-600";
             const sentiment = Math.random() > 0.5 ? "Positive" : "Neutral";
             priceList.innerHTML += `
-                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg hover:scale-105 transition-transform cursor-pointer dark:bg-gray-200 token-card" data-token="${token}">
+                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg hover:scale-105 transition-transform cursor-pointer dark:bg-gray-200 token-card ${isDark ? '' : 'dark'}" data-token="${token}">
                     <img src="${data.image}" alt="${data.name}" class="w-12 h-12 mx-auto mb-2">
                     <h2 class="text-lg sm:text-xl font-semibold text-white dark:text-gray-900">${data.name} (${data.symbol})</h2>
-                    <p class="text-base sm:text-lg text-white dark:text-gray-900">$${data.price.toFixed(2)}</p>
+                    <p class="text-base sm:text-lg text-white dark:text-gray-900">${data.price.toFixed(2)}</p>
                     <p class="text-xs sm:text-sm ${changeColor}">24h: ${data.priceChange.toFixed(2)}%</p>
                     <p class="text-xs sm:text-sm text-gray-400 dark:text-gray-600">Sentiment: ${sentiment}</p>
                     <p class="text-xs sm:text-sm text-gray-400 dark:text-gray-600">Blockchain: ${data.blockchain}</p>
@@ -258,7 +298,7 @@ async function updatePrices() {
             `;
         } else {
             priceList.innerHTML += `
-                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg dark:bg-gray-200 token-card">
+                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg dark:bg-gray-200 token-card ${isDark ? '' : 'dark'}">
                     <h2 class="text-lg sm:text-xl font-semibold text-white dark:text-gray-900">${token}</h2>
                     <p class="text-base sm:text-lg text-red-400 dark:text-red-600">Not found</p>
                     <button class="mt-2 gradient-button text-white px-2 py-1 rounded w-full remove-token dark:bg-gray-600 dark:text-gray-900" data-token="${token}" aria-label="Remove token">Remove</button>
@@ -286,11 +326,11 @@ async function updatePrices() {
             if (data) {
                 modalTitle.textContent = `${data.name} (${data.symbol})`;
                 modalDetails.innerHTML = `
-                    Price: $${data.price.toFixed(2)}<br>
+                    Price: ${data.price.toFixed(2)}<br>
                     24h Change: ${data.priceChange.toFixed(2)}%<br>
-                    Market Cap: $${data.marketCap.toLocaleString()}<br>
-                    24h Volume: $${data.volume.toLocaleString()}<br>
-                    Liquidity: $${data.liquidity.toLocaleString()}<br>
+                    Market Cap: ${data.marketCap.toLocaleString()}<br>
+                    24h Volume: ${data.volume.toLocaleString()}<br>
+                    Liquidity: ${data.liquidity.toLocaleString()}<br>
                     Blockchain: ${data.blockchain}
                 `;
                 alertPrice.value = "";
