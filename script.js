@@ -152,7 +152,7 @@ async function fetchSuggestions(query) {
         const data = await response.json();
         suggestions.innerHTML = "";
         data.coins.slice(0, 5).forEach(coin => {
-            suggestions.innerHTML += `<li class="px-4 py-2 hover:bg-gray-700 cursor-pointer dark:hover:bg-gray-500 text-white dark:text-gray-200" data-id="${coin.id}">${coin.name} (${coin.symbol})</li>`;
+            suggestions.innerHTML += `<li class="px-4 py-2 hover:bg-gray-700 cursor-pointer dark:hover:bg-gray-400 text-white dark:text-gray-900" data-id="${coin.id}">${coin.name} (${coin.symbol})</li>`;
         });
         suggestions.classList.remove("hidden");
         document.querySelectorAll("#suggestions li").forEach(item => {
@@ -174,7 +174,7 @@ async function fetchTrending() {
         trendingList.innerHTML = "";
         data.coins.slice(0, 5).forEach(coin => {
             trendingList.innerHTML += `
-                <button class="gradient-button text-white px-4 py-2 rounded w-full text-left add-trending dark:text-gray-200" data-id="${coin.item.id}">${coin.item.name} (${coin.item.symbol})</button>
+                <button class="gradient-button text-white px-4 py-2 rounded w-full text-left add-trending dark:bg-gray-600 dark:text-gray-900" data-id="${coin.item.id}">${coin.item.name} (${coin.item.symbol})</button>
             `;
         });
         document.querySelectorAll(".add-trending").forEach(button => {
@@ -188,7 +188,7 @@ async function fetchTrending() {
             });
         });
     } catch (error) {
-        trendingList.innerHTML = '<p class="text-red-400 dark:text-red-300">Error loading trending tokens</p>';
+        trendingList.innerHTML = '<p class="text-red-400 dark:text-red-600">Error loading trending tokens</p>';
     }
 }
 
@@ -237,37 +237,37 @@ async function updatePrices() {
     for (const token of tokens) {
         const data = await fetchTokenPrice(token);
         if (data) {
-            const changeColor = data.priceChange >= 0 ? "text-green-400" : "text-red-400";
+            const changeColor = data.priceChange >= 0 ? "text-green-400 dark:text-green-600" : "text-red-400 dark:text-red-600";
             const sentiment = Math.random() > 0.5 ? "Positive" : "Neutral";
             priceList.innerHTML += `
-                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg hover:scale-105 transition-transform cursor-pointer dark:bg-gray-600" data-token="${token}">
+                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg hover:scale-105 transition-transform cursor-pointer dark:bg-gray-200 token-card" data-token="${token}">
                     <img src="${data.image}" alt="${data.name}" class="w-12 h-12 mx-auto mb-2">
-                    <h2 class="text-lg sm:text-xl font-semibold text-white dark:text-gray-200">${data.name} (${data.symbol})</h2>
-                    <p class="text-base sm:text-lg text-white dark:text-gray-200">$${data.price.toFixed(2)}</p>
+                    <h2 class="text-lg sm:text-xl font-semibold text-white dark:text-gray-900">${data.name} (${data.symbol})</h2>
+                    <p class="text-base sm:text-lg text-white dark:text-gray-900">$${data.price.toFixed(2)}</p>
                     <p class="text-xs sm:text-sm ${changeColor}">24h: ${data.priceChange.toFixed(2)}%</p>
-                    <p class="text-xs sm:text-sm text-gray-400 dark:text-gray-300">Sentiment: ${sentiment}</p>
-                    <p class="text-xs sm:text-sm text-gray-400 dark:text-gray-300">Blockchain: ${data.blockchain}</p>
+                    <p class="text-xs sm:text-sm text-gray-400 dark:text-gray-600">Sentiment: ${sentiment}</p>
+                    <p class="text-xs sm:text-sm text-gray-400 dark:text-gray-600">Blockchain: ${data.blockchain}</p>
                     <div class="mt-2 flex flex-wrap gap-2">
-                        ${data.socials.website ? `<a href="${data.socials.website}" target="_blank" class="text-xs text-blue-400 hover:underline dark:text-blue-300">Website</a>` : ""}
-                        ${data.socials.twitter ? `<a href="${data.socials.twitter}" target="_blank" class="text-xs text-blue-400 hover:underline dark:text-blue-300">Twitter</a>` : ""}
-                        ${data.socials.telegram ? `<a href="${data.socials.telegram}" target="_blank" class="text-xs text-blue-400 hover:underline dark:text-blue-300">Telegram</a>` : ""}
-                        <a href="${data.chart}" target="_blank" class="text-xs text-blue-400 hover:underline dark:text-blue-300">Chart</a>
+                        ${data.socials.website ? `<a href="${data.socials.website}" target="_blank" class="text-xs text-blue-400 hover:underline dark:text-blue-600">Website</a>` : ""}
+                        ${data.socials.twitter ? `<a href="${data.socials.twitter}" target="_blank" class="text-xs text-blue-400 hover:underline dark:text-blue-600">Twitter</a>` : ""}
+                        ${data.socials.telegram ? `<a href="${data.socials.telegram}" target="_blank" class="text-xs text-blue-400 hover:underline dark:text-blue-600">Telegram</a>` : ""}
+                        <a href="${data.chart}" target="_blank" class="text-xs text-blue-400 hover:underline dark:text-blue-600">Chart</a>
                     </div>
-                    <button class="mt-2 gradient-button text-white px-2 py-1 rounded w-full sm:w-auto remove-token dark:text-gray-200" data-token="${token}" aria-label="Remove token">Remove</button>
+                    <button class="mt-2 gradient-button text-white px-2 py-1 rounded w-full sm:w-auto remove-token dark:bg-gray-600 dark:text-gray-900" data-token="${token}" aria-label="Remove token">Remove</button>
                 </div>
             `;
         } else {
             priceList.innerHTML += `
-                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg dark:bg-gray-600">
-                    <h2 class="text-lg sm:text-xl font-semibold text-white dark:text-gray-200">${token}</h2>
-                    <p class="text-base sm:text-lg text-red-400 dark:text-red-300">Not found</p>
-                    <button class="mt-2 gradient-button text-white px-2 py-1 rounded w-full remove-token dark:text-gray-200" data-token="${token}" aria-label="Remove token">Remove</button>
+                <div class="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg dark:bg-gray-200 token-card">
+                    <h2 class="text-lg sm:text-xl font-semibold text-white dark:text-gray-900">${token}</h2>
+                    <p class="text-base sm:text-lg text-red-400 dark:text-red-600">Not found</p>
+                    <button class="mt-2 gradient-button text-white px-2 py-1 rounded w-full remove-token dark:bg-gray-600 dark:text-gray-900" data-token="${token}" aria-label="Remove token">Remove</button>
                 </div>
             `;
         }
     }
     if (!tokens.length) {
-        priceList.innerHTML = '<p class="col-span-full text-center text-white dark:text-gray-200">Add a token to track</p>';
+        priceList.innerHTML = '<p class="col-span-full text-center text-white dark:text-gray-900">Add a token to track</p>';
     }
     document.querySelectorAll(".remove-token").forEach(button => {
         button.addEventListener("click", () => {
