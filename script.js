@@ -20,9 +20,8 @@ const setAlert = document.getElementById("setAlert");
 const closeModal = document.getElementById("closeModal");
 
 // Swap-specific elements
-const swapFrom = document.getElementById("swapFrom");
-const swapTo = document.getElementById("swapTo");
-const swapAmount = document.getElementById("swapAmount");
+const tokenAddress = document.getElementById("tokenAddress");
+const usdAmount = document.getElementById("usdAmount");
 const calculateSwap = document.getElementById("calculateSwap");
 const swapResult = document.getElementById("swapResult");
 
@@ -102,6 +101,13 @@ if (themeToggle) {
 if (sidebarToggle && sidebar) {
     sidebarToggle.addEventListener("click", () => {
         sidebar.classList.toggle("open");
+        document.documentElement.classList.toggle("sidebar-open");
+        // Prevent scrolling when sidebar is open
+        if (sidebar.classList.contains("open")) {
+            body.classList.add("overflow-hidden");
+        } else {
+            body.classList.remove("overflow-hidden");
+        }
     });
 }
 
@@ -118,7 +124,7 @@ if (autoRefresh) {
 async function fetchTokenPrice(tokenQuery) {
     try {
         const query = tokenQuery.toLowerCase().trim();
-        // DexScreener API
+        // DexScreener API - Using token address or symbol
         const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(query)}`);
         const dexData = await dexResponse.json();
         if (dexData.pairs && dexData.pairs.length > 0) {
@@ -143,7 +149,7 @@ async function fetchTokenPrice(tokenQuery) {
             };
         }
 
-        // CoinGecko API fallback
+        // CoinGecko API fallback - Using token ID or address
         const cgResponse = await fetch(`https://api.coingecko.com/api/v3/coins/${query}?market_data=true&community_data=true`);
         if (cgResponse.ok) {
             const cgData = await cgResponse.json();
@@ -232,21 +238,18 @@ async function fetchTrending() {
 
 async function calculateSwapValue() {
     if (!swapResult) return;
-    const from = swapFrom.value.trim();
-    const to = swapTo.value.trim();
-    const amount = parseFloat(swapAmount.value) || 0;
-    if (!from || !to || amount <= 0) {
-        swapResult.textContent = "Please enter valid tokens and a positive amount";
+    const address = tokenAddress.value.trim();
+    const amount = parseFloat(usdAmount.value) || 0;
+    if (!address || amount <= 0) {
+        swapResult.textContent = "Please enter a valid token address and a positive USD amount";
         return;
     }
-    const fromData = await fetchTokenPrice(from);
-    const toData = await fetchTokenPrice(to);
-    if (fromData && toData) {
-        const value = (fromData.price * amount) / toData.price;
-        const usdValue = value * toData.price; // Calculate USD value of the converted amount
-        swapResult.textContent = `${amount} ${fromData.symbol} ≈ $${usdValue.toFixed(2)} (${value.toFixed(4)} ${toData.symbol})`;
+    const tokenData = await fetchTokenPrice(address);
+    if (tokenData && tokenData.price > 0) {
+        const tokenAmount = amount / tokenData.price;
+        swapResult.textContent = `${amount} USD ≈ ${tokenAmount.toFixed(4)} ${tokenData.symbol}`;
     } else {
-        swapResult.textContent = "One or both tokens are invalid. Try using token IDs (e.g., 'bitcoin', 'ethereum')";
+        swapResult.textContent = "Invalid token address or price unavailable. Try another address.";
     }
 }
 

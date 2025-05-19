@@ -13,105 +13,6 @@
 }
 
 .token-card {
-    transition: background-color 0.3s ease;
-}
-
-@media (max-width: 640px) {
-    .sidebar {
-        transform: translateX(-100%);
-        z-index: 50;
-        width: 80%;
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-    }
-
-    .container {
-        padding: 1rem;
-    }
-
-    h1 {
-        font-size: 1.75rem;
-    }
-
-    h2 {
-        font-size: 1.25rem;
-    }
-
-    input,
-    button {
-        font-size: 1rem;
-        padding: 0.5rem;
-    }
-
-    .grid {
-        grid-template-columns: 1fr;
-    }
-
-    #modal {
-        padding: 1rem;
-    }
-
-    #modal>div {
-        max-width: 90%;
-        padding: 1rem;
-    }
-
-    nav ul {
-        gap: 0.5rem;
-    }
-
-    nav a,
-    nav button {
-        font-size: 0.9rem;
-        padding: 0.5rem;
-    }
-
-    .text-3xl {
-        font-size: 1.5rem;
-    }
-
-    .text-lg {
-        font-size: 1rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .flex-col.sm\:flex-row {
-        flex-direction: column;
-    }
-
-    .w-32,
-    .w-24 {
-        width: 100%;
-    }
-
-    .sm\:w-64 {
-        width: 100%;
-    }
-
-    .grid-cols-2,
-    .grid-cols-3 {
-        grid-template-columns: 1fr;
-    }
-}
-
-.gradient-button {
-    background: linear-gradient(to right, #3b82f6, #a855f7);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.gradient-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
-}
-
-.sidebar {
-    transition: transform 0.3s ease-in-out;
-}
-
-.token-card {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -120,21 +21,32 @@
         transform: translateX(-100%);
         z-index: 50;
         width: 80%;
+        max-width: 300px;
+        /* Prevent overflow */
         background: #1f2937;
         /* bg-gray-800 */
+    }
+
+    .dark .sidebar {
+        background: #e5e7eb;
+        /* bg-gray-200 */
     }
 
     .sidebar.open {
         transform: translateX(0);
     }
 
-    .sidebar.dark {
-        background: #e5e7eb;
-        /* bg-gray-200 */
+    .sidebar-open .container {
+        padding-left: 80%;
+        /* Shift content when sidebar is open */
+        transition: padding-left 0.3s ease-in-out;
     }
 
     .container {
         padding: 0.75rem;
+        padding-left: 3rem;
+        /* Space for sidebar toggle button */
+        transition: padding-left 0.3s ease-in-out;
     }
 
     nav {
@@ -142,7 +54,7 @@
         /* bg-gray-800 */
     }
 
-    nav.dark {
+    .dark nav {
         background: #e5e7eb;
         /* bg-gray-200 */
     }
@@ -152,7 +64,7 @@
         /* bg-gray-800 */
     }
 
-    .token-card.dark {
+    .dark .token-card {
         background: #e5e7eb;
         /* bg-gray-200 */
     }
@@ -164,7 +76,7 @@
         padding: 0.75rem;
     }
 
-    #modal>div.dark {
+    .dark #modal>div {
         background: #e5e7eb;
         /* bg-gray-200 */
     }
@@ -176,7 +88,7 @@
         /* text-white */
     }
 
-    input.dark {
+    .dark input {
         background: #e5e7eb;
         /* bg-gray-200 */
         color: #111827;
