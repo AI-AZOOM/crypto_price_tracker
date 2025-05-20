@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,19 +8,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="min-h-screen p-4 sm:p-6 transition-colors duration-300 bg-gray-900 text-white dark:bg-white dark:text-gray-900 overflow-x-hidden" id="body">
+
+<body
+    class="min-h-screen p-4 sm:p-6 transition-colors duration-300 bg-gray-900 text-white dark:bg-white dark:text-gray-900 overflow-x-hidden"
+    id="body">
     <nav class="bg-gray-800 p-4 mb-6 rounded-lg dark:bg-gray-200">
         <ul class="flex flex-col sm:flex-row gap-4 justify-center">
             <li><a href="index.html" class="text-blue-400 hover:underline dark:text-blue-600">Home</a></li>
             <li><a href="tracker.html" class="text-blue-400 hover:underline dark:text-blue-600">Tracker</a></li>
             <li><a href="swap.html" class="text-blue-400 hover:underline dark:text-blue-600">Swap Calculator</a></li>
-            <li><button id="themeToggle" class="gradient-button text-white px-3 py-1 rounded dark:bg-gray-600 dark:text-gray-900" aria-label="Toggle theme">🌙</button></li>
+            <li><button id="themeToggle"
+                    class="gradient-button text-white px-3 py-1 rounded dark:bg-gray-600 dark:text-gray-900"
+                    aria-label="Toggle theme">🌙</button></li>
         </ul>
     </nav>
     <div class="container mx-auto text-center">
         <h1 class="text-3xl sm:text-4xl font-bold mb-6 dark:text-gray-900">Welcome to Dynamic Crypto Price Tracker</h1>
-        <p class="text-lg mb-4 dark:text-gray-900">Track your favorite cryptocurrencies, explore trending tokens, and calculate swaps with ease.</p>
-        <a href="tracker.html" class="gradient-button text-white px-6 py-2 rounded dark:bg-gray-600 dark:text-gray-900">Start Tracking</a>
+        <p class="text-lg mb-4 dark:text-gray-900">Track your favorite cryptocurrencies, explore trending tokens, and
+            calculate swaps with ease.</p>
+        <a href="tracker.html"
+            class="gradient-button text-white px-6 py-2 rounded dark:bg-gray-600 dark:text-gray-900">Start Tracking</a>
     </div>
     <audio id="clickSound" src="click.mp3"></audio>
     <script src="script.js"></script>
@@ -27,4 +35,5 @@
         initializeTheme();
     </script>
 </body>
+
 </html>

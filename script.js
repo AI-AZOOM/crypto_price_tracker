@@ -102,7 +102,6 @@ if (sidebarToggle && sidebar) {
     sidebarToggle.addEventListener("click", () => {
         sidebar.classList.toggle("open");
         document.documentElement.classList.toggle("sidebar-open");
-        // Prevent scrolling when sidebar is open
         if (sidebar.classList.contains("open")) {
             body.classList.add("overflow-hidden");
         } else {
@@ -124,11 +123,20 @@ if (autoRefresh) {
 async function fetchTokenPrice(tokenQuery) {
     try {
         const query = tokenQuery.toLowerCase().trim();
-        // DexScreener API - Using token address or symbol
+        // DexScreener API
         const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(query)}`);
         const dexData = await dexResponse.json();
         if (dexData.pairs && dexData.pairs.length > 0) {
             const pair = dexData.pairs[0];
+            let blockchain = pair.chainId || "Unknown";
+            // Fix incorrect blockchain mappings
+            if (blockchain === "osmosis") {
+                if (pair.baseToken.symbol.toLowerCase() === "sol" || pair.baseToken.name.toLowerCase().includes("solana")) {
+                    blockchain = "solana";
+                } else if (pair.baseToken.symbol.toLowerCase() === "btc" || pair.baseToken.name.toLowerCase().includes("bitcoin")) {
+                    blockchain = "bitcoin";
+                }
+            }
             return {
                 name: pair.baseToken.name,
                 symbol: pair.baseToken.symbol,
@@ -144,15 +152,24 @@ async function fetchTokenPrice(tokenQuery) {
                     website: pair.info?.websites?.[0]?.url || ""
                 },
                 chart: pair.url,
-                blockchain: pair.chainId || "Unknown",
+                blockchain: blockchain,
                 source: "DexScreener"
             };
         }
 
-        // CoinGecko API fallback - Using token ID or address
+        // CoinGecko API fallback
         const cgResponse = await fetch(`https://api.coingecko.com/api/v3/coins/${query}?market_data=true&community_data=true`);
         if (cgResponse.ok) {
             const cgData = await cgResponse.json();
+            let blockchain = cgData.platforms?.[Object.keys(cgData.platforms)[0]] ? Object.keys(cgData.platforms)[0] : "Unknown";
+            // Fix incorrect blockchain mappings
+            if (cgData.id === "sui" && blockchain === "cronos") {
+                blockchain = "sui";
+            } else if (cgData.id === "solana") {
+                blockchain = "solana";
+            } else if (cgData.id === "bitcoin") {
+                blockchain = "bitcoin";
+            }
             return {
                 name: cgData.name,
                 symbol: cgData.symbol.toUpperCase(),
@@ -168,7 +185,7 @@ async function fetchTokenPrice(tokenQuery) {
                     website: cgData.links.homepage?.[0] || ""
                 },
                 chart: `https://www.coingecko.com/en/coins/${cgData.id}`,
-                blockchain: cgData.platforms?.[Object.keys(cgData.platforms)[0]] ? Object.keys(cgData.platforms)[0] : "Unknown",
+                blockchain: blockchain,
                 source: "CoinGecko"
             };
         }

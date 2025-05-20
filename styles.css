@@ -20,16 +20,8 @@
     .sidebar {
         transform: translateX(-100%);
         z-index: 50;
-        width: 80%;
-        max-width: 300px;
-        /* Prevent overflow */
-        background: #1f2937;
-        /* bg-gray-800 */
-    }
-
-    .dark .sidebar {
-        background: #e5e7eb;
-        /* bg-gray-200 */
+        width: 70%;
+        max-width: 250px;
     }
 
     .sidebar.open {
@@ -37,95 +29,48 @@
     }
 
     .sidebar-open .container {
-        padding-left: 80%;
-        /* Shift content when sidebar is open */
+        padding-left: calc(70% + 0.5rem);
         transition: padding-left 0.3s ease-in-out;
     }
 
     .container {
-        padding: 0.75rem;
-        padding-left: 3rem;
-        /* Space for sidebar toggle button */
+        padding: 0.5rem;
+        padding-left: 2.5rem;
         transition: padding-left 0.3s ease-in-out;
-    }
-
-    nav {
-        background: #1f2937;
-        /* bg-gray-800 */
-    }
-
-    .dark nav {
-        background: #e5e7eb;
-        /* bg-gray-200 */
-    }
-
-    .token-card {
-        background: #1f2937;
-        /* bg-gray-800 */
-    }
-
-    .dark .token-card {
-        background: #e5e7eb;
-        /* bg-gray-200 */
-    }
-
-    #modal>div {
-        background: #1f2937;
-        /* bg-gray-800 */
-        max-width: 95%;
-        padding: 0.75rem;
-    }
-
-    .dark #modal>div {
-        background: #e5e7eb;
-        /* bg-gray-200 */
-    }
-
-    input {
-        background: #1f2937;
-        /* bg-gray-800 */
-        color: #ffffff;
-        /* text-white */
-    }
-
-    .dark input {
-        background: #e5e7eb;
-        /* bg-gray-200 */
-        color: #111827;
-        /* text-gray-900 */
-    }
-
-    h1,
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    input,
-    button {
-        font-size: 0.95rem;
-        padding: 0.4rem;
     }
 
     .grid {
         grid-template-columns: 1fr;
+        gap: 2;
+    }
+
+    h1,
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    input,
+    button {
+        font-size: 0.9rem;
+        padding: 0.3rem;
     }
 
     nav ul {
-        gap: 0.4rem;
+        gap: 0.3rem;
     }
 
     nav a,
     nav button {
-        font-size: 0.85rem;
-        padding: 0.4rem;
+        font-size: 0.8rem;
+        padding: 0.3rem;
     }
 
     .text-3xl {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
 
     .text-lg {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 }
 
