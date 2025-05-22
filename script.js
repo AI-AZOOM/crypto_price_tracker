@@ -30,6 +30,13 @@ let alerts = JSON.parse(localStorage.getItem("alerts")) || {};
 let autoRefreshInterval = null;
 let isSoundReady = false;
 
+// Sanitize user input to prevent XSS
+function sanitizeInput(input) {
+    const div = document.createElement("div");
+    div.textContent = input;
+    return div.innerHTML;
+}
+
 // Initialize click sound after user interaction
 document.addEventListener("click", () => {
     if (!isSoundReady && clickSound) {
@@ -62,7 +69,7 @@ function initializeTheme() {
     }
     if (priceList) {
         priceList.classList.toggle("dark", !isDark);
-        updatePrices(); // Re-render cards to apply theme
+        updatePrices();
     }
     document.querySelectorAll("nav").forEach(nav => {
         nav.classList.toggle("dark", !isDark);
@@ -85,7 +92,7 @@ if (themeToggle) {
         }
         if (priceList) {
             priceList.classList.toggle("dark");
-            updatePrices(); // Re-render cards to apply theme
+            updatePrices();
         }
         document.querySelectorAll("nav").forEach(nav => {
             nav.classList.toggle("dark");
@@ -122,14 +129,15 @@ if (autoRefresh) {
 
 async function fetchTokenPrice(tokenQuery) {
     try {
-        const query = tokenQuery.toLowerCase().trim();
+        const query = sanitizeInput(tokenQuery.toLowerCase().trim());
+        // Rate-limiting: 1-second delay to avoid abuse
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // DexScreener API
         const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(query)}`);
         const dexData = await dexResponse.json();
         if (dexData.pairs && dexData.pairs.length > 0) {
             const pair = dexData.pairs[0];
             let blockchain = pair.chainId || "Unknown";
-            // Fix incorrect blockchain mappings
             if (blockchain === "osmosis") {
                 if (pair.baseToken.symbol.toLowerCase() === "sol" || pair.baseToken.name.toLowerCase().includes("solana")) {
                     blockchain = "solana";
@@ -157,12 +165,15 @@ async function fetchTokenPrice(tokenQuery) {
             };
         }
 
-        // CoinGecko API fallback
-        const cgResponse = await fetch(`https://api.coingecko.com/api/v3/coins/${query}?market_data=true&community_data=true`);
+        // CoinGecko API with API key (replace YOUR_API_KEY)
+        const cgResponse = await fetch(`https://api.coingecko.com/api/v3/coins/${query}?market_data=true&community_data=true`, {
+            headers: {
+                "Authorization": "Bearer YOUR_API_KEY"
+            }
+        });
         if (cgResponse.ok) {
             const cgData = await cgResponse.json();
             let blockchain = cgData.platforms?.[Object.keys(cgData.platforms)[0]] ? Object.keys(cgData.platforms)[0] : "Unknown";
-            // Fix incorrect blockchain mappings
             if (cgData.id === "sui" && blockchain === "cronos") {
                 blockchain = "sui";
             } else if (cgData.id === "solana") {
@@ -198,8 +209,9 @@ async function fetchTokenPrice(tokenQuery) {
 
 async function fetchSuggestions(query) {
     if (!query || !suggestions) return;
+    const sanitizedQuery = sanitizeInput(query);
     try {
-        const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query.toLowerCase())}`);
+        const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(sanitizedQuery.toLowerCase())}`);
         const data = await response.json();
         suggestions.innerHTML = "";
         if (data.coins && data.coins.length > 0) {
@@ -255,7 +267,7 @@ async function fetchTrending() {
 
 async function calculateSwapValue() {
     if (!swapResult) return;
-    const address = tokenAddress.value.trim();
+    const address = sanitizeInput(tokenAddress.value.trim());
     const amount = parseFloat(usdAmount.value) || 0;
     if (!address || amount <= 0) {
         swapResult.textContent = "Please enter a valid token address and a positive USD amount";
@@ -361,9 +373,9 @@ async function updatePrices() {
     await checkAlerts();
 }
 
-if (tokenInput) tokenInput.addEventListener("input", () => fetchSuggestions(tokenInput.value.trim()));
+if (tokenInput) tokenInput.addEventListener("input", () => fetchSuggestions(sanitizeInput(tokenInput.value.trim())));
 if (addToken) addToken.addEventListener("click", () => {
-    const token = tokenInput.value.trim();
+    const token = sanitizeInput(tokenInput.value.trim());
     if (token && !tokens.includes(token)) {
         tokens.push(token);
         localStorage.setItem("tokens", JSON.stringify(tokens));
